@@ -1,13 +1,12 @@
 import "./SignUp.css";
 import { useEffect, useState } from "react";
-import userEvent from "@testing-library/user-event";
-const SignUp = () => {
+import { Link,useHistory } from "react-router-dom";
+const SignUp = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmpassword, setConfirmpassword] = useState("");
   const[loadToken,setLoadToken]=useState('');
   const isLoggedIn=!!loadToken
-  console.log(isLoggedIn);
   useEffect(()=>{
     setLoadToken(prevToken=>{
         if(localStorage.getItem('token')){
@@ -49,10 +48,13 @@ const SignUp = () => {
         },
       });
       if (response.ok) {
+      
         const jsonresponse = await response.json();
         console.log(jsonresponse.idToken);
         localStorage.setItem('token',jsonresponse.idToken);
         localStorage.setItem('email',jsonresponse.email);
+        props.loginstatus(isLoggedIn);
+        
       } else {
         const jsondata = await response.json();
         throw jsondata.error;
@@ -69,7 +71,7 @@ const SignUp = () => {
     setConfirmpassword('')
  }
 
-
+  
 
 
   return (
@@ -103,6 +105,7 @@ const SignUp = () => {
           {isLoggedIn===true? 'LogIN':'SignUp'}
         </button>
       </form>
+      {isLoggedIn===true&& <Link to='/forgetpassword'><center>Forget the password ?</center></Link>}
       <button className="login" onClick={buttonHandler}>{isLoggedIn===true ?'Dont Have An Account Sign Up Here':'Have An Account? Sign in here'}</button>
     </div>
   );
