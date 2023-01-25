@@ -87,7 +87,7 @@ const SignUp = (props) => {
         ></input>
         <label htmlFor="password">password</label>
         <input
-          type="text"
+          type="password"
           id="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -95,14 +95,14 @@ const SignUp = (props) => {
         ></input>
        {!isLoggedIn&& <label htmlFor="confirmpswd">Confirm password</label>}
         {!isLoggedIn&&<input
-          type="text"
+          type="password"
           id="confirmpswd"
           value={confirmpassword}
           onChange={(e) => setConfirmpassword(e.target.value)}
           required
         ></input>}
         <button type="submit" id="signup">
-          {isLoggedIn===true? 'LogIN':'SignUp'}
+          {isLoggedIn===true? 'LogIn':'SignUp'}
         </button>
       </form>
       {isLoggedIn===true&& <Link to='/forgetpassword'><center>Forget the password ?</center></Link>}
