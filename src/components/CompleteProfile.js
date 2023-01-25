@@ -1,14 +1,37 @@
-import React from "react";
-import { useRef } from "react";
+import React, { useEffect, useState } from "react";
+
 const CompleteProfile = (props) => {
-    const fullname=useRef('');
-    const photourl=useRef('');
+    const[name,setName]=useState('');
+    const[email,setEmail]=useState('');
+    const[photo,setPhoto]=useState('');
+    const [fullname,setFullName]=useState('')
+    const [photourl,setPhotoUrl]=useState('')
+    useEffect(()=>{
+        const tokenId=localStorage.getItem('token')
+         fetch(`https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=AIzaSyAsYyotWR2zesaRukTm4MhJNB9k7RTFZdY`,
+       {
+        method:'POST',
+        body: JSON.stringify({
+            idToken:tokenId,
+            returnSecureToken: true,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+       }).then((res)=>res.json().then(data=>
+          {
+            setFullName(data.users[0].displayName)
+            setPhotoUrl(data.users[0].photoUrl)
+          }
+        ))
+      
+    },[])
+
  const updateProfileHandler = async(event)=>{
     event.preventDefault();
     const token=localStorage.getItem('token');
-    console.log(token,typeof(token))
-    const fullName=fullname.current.value;
-    const photoUrl=photourl.current.value;
+    let fullName=fullname;
+    let photoUrl=photourl;
     const response=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyAsYyotWR2zesaRukTm4MhJNB9k7RTFZdY`,
     {
         method:'POST',
@@ -23,8 +46,11 @@ const CompleteProfile = (props) => {
           },
     })
     if(response.ok){
-       const responseData=await response.json() 
-       console.log(responseData);
+      const data=await response.json();
+      setName(data.displayName);
+      setEmail(data.email);
+      setPhoto(data.photoUrl)
+      
     }
 
     
@@ -43,14 +69,13 @@ const CompleteProfile = (props) => {
         }}
       >
         <h2>Winners Never quit,Quitters Never Win.</h2>
-        <text>
+        <p>
           your profile is 64% completed.A Compete profile has higher chances of
           landing a job,
           <br /> Complete following details
-        </text>
+        </p>
       </div>
       <center>
-        {" "}
         <div
           style={{
             width: "90%",
@@ -69,7 +94,8 @@ const CompleteProfile = (props) => {
             </label>
             <br />
             <input
-              ref={fullname}
+              value={fullname}
+              onChange={(e)=>setFullName(e.target.value)}
               type="text"
               id="fullname"
               style={{ padding: "8px", width: "35rem", marginBottom: "10px" }}
@@ -83,7 +109,8 @@ const CompleteProfile = (props) => {
             </label>
             <br />
             <input
-              ref={photourl}
+             value={photourl}
+             onChange={(e)=>setPhoto(e.target.value)}
               type="url"
               id="photo"
               style={{
@@ -107,6 +134,11 @@ const CompleteProfile = (props) => {
               update
             </button>
           </form>
+        </div>
+        <div>
+           {name && <h3>display Name is {name}</h3>}<br/>
+           {email &&<h3> email is {email}</h3>}<br/>
+            {photo &&<h3>photo url  is {photo}</h3>}<br/>
         </div>
       </center>
     </>
