@@ -7,6 +7,7 @@ const SignUp = (props) => {
   const [confirmpassword, setConfirmpassword] = useState("");
   const[loadToken,setLoadToken]=useState('');
   const isLoggedIn=!!loadToken
+  let history=useHistory()
   useEffect(()=>{
     setLoadToken(prevToken=>{
         if(localStorage.getItem('token')){
@@ -53,7 +54,7 @@ const SignUp = (props) => {
         console.log(jsonresponse.idToken);
         localStorage.setItem('token',jsonresponse.idToken);
         localStorage.setItem('email',jsonresponse.email);
-        props.loginstatus(isLoggedIn);
+        history.replace('/home');
         
       } else {
         const jsondata = await response.json();

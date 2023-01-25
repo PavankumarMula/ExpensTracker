@@ -3,7 +3,7 @@ body{
    background-color: lightsalmon;
 }
 .card{
-    width:90%;
+   width:90%;
    max-width: 35rem;
    padding: 2rem;
    border-radius: 15px;
