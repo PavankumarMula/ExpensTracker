@@ -51,7 +51,7 @@ const LogIn=()=>{
       <button type="submit">LogIn</button>
     </form>
     <div>
-       <center><Link to='/forgetpassword' style={{fontWeight:'bold'}}>Forgot Password ?</Link></center> 
+       <center><Link to='/forgetpassword' style={{fontWeight:'bold',color:'black'}}>Forgot Password ?</Link></center> 
     </div>
     <div>
       <button className="login" onClick={()=>history.replace('/signup')}>Have No Account? Signup Here</button>
