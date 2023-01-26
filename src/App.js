@@ -1,23 +1,38 @@
 import SignUp from "./components/SignUp";
-import { Redirect, Route, Switch } from "react-router-dom";
+import  {Redirect, Route, Switch}  from "react-router-dom";
+
 import Home from "./components/Home";
 import ForgetPassword from "./components/ForgetPassword";
 import CompleteProfile from "./components/CompleteProfile";
+import LogIn from "./components/Login";
+import { useState } from "react";
 
 
 function App(props) {
-  const loadtoken=localStorage.getItem('token');
-  const isLoggedIn=!!loadtoken
-  console.log(isLoggedIn);
+  
+  
+
   return <>
-  <Switch>
-   {isLoggedIn===true&& <Route exact path='/' component={Home}/>}
-   {isLoggedIn===false&& <Route exact path='/' component={SignUp}/>}
-    <Route path='/home' component={Home}/>
-    <Route path="/forgetpassword" component={ForgetPassword}/>
-    <Route path="/signup" component={SignUp}/>
-    <Route path="/completeprofile" component={CompleteProfile}/>
-  </Switch>
+   <Switch> 
+   <Route exact path='/'>
+      {localStorage.getItem('token')?<Redirect to='/home'></Redirect>:<Redirect to='/login'></Redirect>}
+    </Route>
+    <Route path='/login'>
+      <LogIn/>
+    </Route>
+   <Route path='/home'>
+    <Home/>
+    </Route>
+    <Route path='/signup'>
+      <SignUp/>
+    </Route>
+    <Route path='/forgetpassword'>
+      <ForgetPassword/>
+    </Route>
+    <Route path='/completeprofile'>
+      <CompleteProfile/>
+    </Route>
+   </Switch>
   </>
   
  

@@ -1,114 +1,77 @@
 import "./SignUp.css";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link,useHistory } from "react-router-dom";
 const SignUp = (props) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmpassword, setConfirmpassword] = useState("");
-  const[loadToken,setLoadToken]=useState('');
-  const isLoggedIn=!!loadToken
-  let history=useHistory()
-  useEffect(()=>{
-    setLoadToken(prevToken=>{
-        if(localStorage.getItem('token')){
-           return prevToken=localStorage.getItem('token') 
-        }else return prevToken=''
-      })
-  },[])
-  
-  let url;
-      if(isLoggedIn===true){
-        url='https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAsYyotWR2zesaRukTm4MhJNB9k7RTFZdY'
+  const[signedup,setSignedUp]=useState(false);
+  const history=useHistory()
+   const email=useRef('')
+   const password=useRef('')
+   const confirmPassword=useRef('')
+   //signup form handler
+   const signupHandler = async(event)=>{
+      event.preventDefault()
+     const emailValue=email.current.value
+     const passwordValue=password.current.value
+     const confirmPasswordValue=confirmPassword.current.value;
+     //validations
+     if(passwordValue.trim().length<=5){
+      return alert("Password must be atleast 6 characters")
+     }else if(passwordValue!==confirmPasswordValue){
+      return alert("passwords are not matching")
+     }
+    try{
+      const postFormData=await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAsYyotWR2zesaRukTm4MhJNB9k7RTFZdY`,
+      {
+         method:'POST',
+         body: JSON.stringify({
+           email:emailValue,
+           password: passwordValue,
+           returnSecureToken: true,
+         }),
+         headers: {
+           'Content-Type': 'application/json',
+         },
+      })//fetch ends
+      
+      if(postFormData.ok){
+        const responseData=await postFormData.json();
+        console.log(typeof(responseData.idToken));
+        if(responseData.idToken!==''){
+          setSignedUp(true);
+          history.replace('/login');
+        }
       }else{
-        url ='https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAsYyotWR2zesaRukTm4MhJNB9k7RTFZdY'
+       const responseData=await postFormData.json();
+       throw responseData.error
       }
-
-
-  const formhandler = async (e) => {
-    e.preventDefault();
-    if(isLoggedIn===false){
-        if (password.trim().length <= 5) {
-            return alert("password must be atleast 6 characters");
-          } else if (password !== confirmpassword) {
-            return alert("passwords are not matching");
-          }
+    }catch(error){
+        alert(error.message)
     }
-    
-    try {
-      
-      
-      const response = await fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      if (response.ok) {
-      
-        const jsonresponse = await response.json();
-        console.log(jsonresponse.idToken);
-        localStorage.setItem('token',jsonresponse.idToken);
-        localStorage.setItem('email',jsonresponse.email);
-        history.replace('/home');
-        
-      } else {
-        const jsondata = await response.json();
-        throw jsondata.error;
-      }
-    } catch (err) {
-      alert(err.message);
-    }
-  };
+   }//form handler ends
 
- const buttonHandler=(e)=>{
-    setLoadToken(prevState=>!prevState);
-    setEmail('')
-    setPassword('')
-    setConfirmpassword('')
- }
+console.log(signedup);
+
+
+  return <>
+   <div className="card">
+    <form className="form" onSubmit={signupHandler}>
+      <label htmlFor="email">Email</label>
+      <input type='email'ref={email}id="email" required></input>
+      <label htmlFor="password">Password</label>
+      <input type='password'ref={password}id="password" required></input>
+      <label htmlFor="confirm">Confirm Password</label>
+      <input type='password'ref={confirmPassword}id="confirm" required></input>
+      <button type="submit">SignUp</button>
+    </form>
+    <div>
+      <button className="login" onClick={()=>history.replace('/login')}>Already Have An Account? Log In Here</button>
+    </div>
+   </div>
+  
+  </>
+
 
   
 
-
-  return (
-    <div className="card">
-      <form onSubmit={formhandler} className="form">
-        <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        ></input>
-        <label htmlFor="password">password</label>
-        <input
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        ></input>
-       {!isLoggedIn&& <label htmlFor="confirmpswd">Confirm password</label>}
-        {!isLoggedIn&&<input
-          type="password"
-          id="confirmpswd"
-          value={confirmpassword}
-          onChange={(e) => setConfirmpassword(e.target.value)}
-          required
-        ></input>}
-        <button type="submit" id="signup">
-          {isLoggedIn===true? 'LogIn':'SignUp'}
-        </button>
-      </form>
-      {isLoggedIn===true&& <Link to='/forgetpassword'><center>Forget the password ?</center></Link>}
-      <button className="login" onClick={buttonHandler}>{isLoggedIn===true ?'Dont Have An Account Sign Up Here':'Have An Account? Sign in here'}</button>
-    </div>
-  );
 };
 export default SignUp;

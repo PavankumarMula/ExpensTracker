@@ -1,6 +1,6 @@
 body{
    margin: 0;
-   background-color: lightsalmon;
+   background-color:#1B1212;
 }
 .card{
    width:90%;
@@ -8,7 +8,7 @@ body{
    padding: 2rem;
    border-radius: 15px;
    margin: 3rem auto;
-   background-color:lightcyan;
+   background-color:yellowgreen;
 }
 .form input{
     display: flex;
