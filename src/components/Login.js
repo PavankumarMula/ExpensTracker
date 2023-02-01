@@ -28,7 +28,7 @@ const LogIn=()=>{
         localStorage.setItem('token',response.idToken);
         localStorage.setItem('email',response.email);
         setToken(response.idToken);
-        history.replace('/home')
+        history.replace('/expenses')
     }else{
         const response=await loginData.json();
         throw response.error

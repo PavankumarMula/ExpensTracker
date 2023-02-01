@@ -5,7 +5,8 @@ import Home from "./components/Home";
 import ForgetPassword from "./components/ForgetPassword";
 import CompleteProfile from "./components/CompleteProfile";
 import LogIn from "./components/Login";
-import { useState } from "react";
+
+import Expenses from "./components/Expenses";
 
 
 function App(props) {
@@ -31,6 +32,9 @@ function App(props) {
     </Route>
     <Route path='/completeprofile'>
       <CompleteProfile/>
+    </Route>
+    <Route path='/expenses'>
+      <Expenses/>
     </Route>
    </Switch>
   </>
