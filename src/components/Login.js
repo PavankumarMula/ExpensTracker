@@ -1,12 +1,17 @@
 import { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
-
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { authActions } from "../Store/AuthUser";
 const LogIn=()=>{
-    const[token,setToken]=useState('')
+    //const[token,setToken]=useState('')
+    const userLoginDetails= useSelector(state => state.auth.isLoggedIn);
+    console.log(userLoginDetails)
+    const dispatch=useDispatch()
     const email=useRef('')
     const password=useRef('')
     const history=useHistory()
-    const isLoggedIn=!!token;
+    //const isLoggedIn=!!token;
     //logIn handler
     const logInHandler=async (event)=>{
         event.preventDefault();
@@ -27,7 +32,8 @@ const LogIn=()=>{
         const response=await loginData.json()
         localStorage.setItem('token',response.idToken);
         localStorage.setItem('email',response.email);
-        setToken(response.idToken);
+       // setToken(response.idToken);
+        dispatch(authActions.login())
         history.replace('/expenses')
     }else{
         const response=await loginData.json();

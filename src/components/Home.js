@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link, useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { authActions } from "../Store/AuthUser";
 const Home = (props) => {
   const [email, setEmail] = useState("");
+  const dispatch=useDispatch()
   const history=useHistory()
   const verifyEmailHandler = async (e) => {
     const token = localStorage.getItem("token");
@@ -33,8 +36,7 @@ const Home = (props) => {
   };
 
  const logoutHandler=()=>{
-   localStorage.removeItem('token');
-   localStorage.removeItem('email');
+  dispatch(authActions.logout())
    history.replace('/login');
  }
 
@@ -57,6 +59,7 @@ const Home = (props) => {
               <Link to="/completeprofile" style={{ color: "red" }}>
                 complete now
               </Link>
+              <Link to="/expenses" style={{ color: "red",marginLeft:"50px" }}>Expenses</Link>
             </span>
           </h4>
         </div>
@@ -65,9 +68,9 @@ const Home = (props) => {
           style={{
             width: "120px",
             height: "40px",
-            margin: "20px",
+            margin: "15px",
             backgroundColor: "black",
-            color: "red",
+            color: "white",
             borderRadius: "10px",
           }}
         >

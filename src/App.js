@@ -1,6 +1,6 @@
 import SignUp from "./components/SignUp";
 import  {Redirect, Route, Switch}  from "react-router-dom";
-
+import { Link } from "react-router-dom";
 import Home from "./components/Home";
 import ForgetPassword from "./components/ForgetPassword";
 import CompleteProfile from "./components/CompleteProfile";
