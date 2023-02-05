@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import "./Expenses.css";
-
+import { useDispatch, useSelector } from "react-redux";
+import { ExpenseSliceActions } from "../Store/ExpensesSlice";
 const Expenses = () => {
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [expenseName, setExpenseName] = useState("");
   const [expenseCategory, setExpenseCategory] = useState("");
-  const [expenses, setExpenses] = useState([]);
+  // const [expenses, setExpenses] = useState([]);
   const [edit, setEdit] = useState(null);
+  const expenses = useSelector((state) => state.expenses.expenses);
+  const dispatch = useDispatch();
+  console.log(expenses);
   useEffect(() => {
     try {
       fetch(`https://react-92f28-default-rtdb.firebaseio.com/Expenses.json`)
@@ -16,14 +20,15 @@ const Expenses = () => {
             for (let key of Object.keys(data)) {
               myarray.push({ id: key, ...data[key] });
             }
-            setExpenses(myarray);
+
+            dispatch(ExpenseSliceActions.refreshExpenses(myarray));
           })
         )
         .catch((err) => console.log(err));
     } catch (error) {
       alert(error);
     }
-  }, []);
+  }, [dispatch]);
 
   const expensesFormHandler = async (event) => {
     event.preventDefault();
@@ -44,17 +49,25 @@ const Expenses = () => {
           }
         );
         if (editData.ok) {
-          setExpenses((prevExpenses) =>
-            prevExpenses.map((item) =>
-              item.id === edit.id
-                ? {
-                    ...item,
-                    amount: expenseAmount,
-                    name: expenseName,
-                    category: expenseCategory,
-                  }
-                : item
-            )
+          //  setExpenses((prevExpenses) =>
+          //   prevExpenses.map((item) =>
+          //     item.id === edit.id
+          //       ? {
+          //           ...item,
+          // amount: expenseAmount,
+          // name: expenseName,
+          // category: expenseCategory,
+          //         }
+          //       : item
+          //   )
+          // );
+          dispatch(
+            ExpenseSliceActions.editExpensive({
+              id:edit.id,
+              amount: expenseAmount,
+              name: expenseName,
+              category: expenseCategory,
+            })
           );
         } else {
           const editjson = await editData.json();
@@ -63,7 +76,7 @@ const Expenses = () => {
       } catch (error) {
         alert(error.message);
       }
-    } 
+    }
     //add Expense
     else {
       try {
@@ -84,17 +97,25 @@ const Expenses = () => {
         if (expenseResposnse.ok) {
           const response = await expenseResposnse.json();
           if (response.name !== undefined) {
-            setExpenses((prevValues) => {
-              return [
-                ...prevValues,
-                {
-                  id: response.name,
-                  name: expenseName,
-                  amount: expenseAmount,
-                  category: expenseCategory,
-                },
-              ];
-            });
+            // setExpenses((prevValues) => {
+            //   return [
+            //     ...prevValues,
+            //     {
+            //       id: response.name,
+            //       name: expenseName,
+            //       amount: expenseAmount,
+            //       category: expenseCategory,
+            //     },
+            //   ];
+            // });
+            dispatch(
+              ExpenseSliceActions.addExpensive({
+                id: response.name,
+                name: expenseName,
+                amount: expenseAmount,
+                category: expenseCategory,
+              })
+            );
             setExpenseName("");
             setExpenseAmount(0);
             setExpenseCategory("");
@@ -118,9 +139,10 @@ const Expenses = () => {
         }
       );
       if (response.ok) {
-        setExpenses((prevValues) => {
-          return prevValues.filter((expense) => expense.id !== expenseId);
-        });
+        // setExpenses((prevValues) => {
+        //   return prevValues.filter((expense) => expense.id !== expenseId);
+        // });
+        dispatch(ExpenseSliceActions.removeExpensive(expenseId))
       } else {
         const data = await response.json();
         throw data.error;
