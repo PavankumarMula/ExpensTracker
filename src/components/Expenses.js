@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./Expenses.css";
 import { useDispatch, useSelector } from "react-redux";
 import { ExpenseSliceActions } from "../Store/ExpensesSlice";
+import { themeActions } from "../Store/ThemeSlicer";
 const Expenses = () => {
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [expenseName, setExpenseName] = useState("");
@@ -10,6 +11,7 @@ const Expenses = () => {
 
   const [edit, setEdit] = useState(null);
   const expenses = useSelector((state) => state.expenses.expenses);
+  const themeMode = useSelector((state) => state.theme.theme);
   const dispatch = useDispatch();
   useEffect(() => {
     try {
@@ -38,6 +40,16 @@ const Expenses = () => {
     }
     setTotalAmount(sum);
   }, [expenses]);
+  //theme
+
+  useEffect(()=>{
+    if(themeMode==="dark"){
+      document.body.style.backgroundColor="darkred"
+    }else{
+      document.body.style.backgroundColor="darkblue"
+    }
+  },[themeMode])//theme ends
+
 
   const expensesFormHandler = async (event) => {
     event.preventDefault();
@@ -168,6 +180,22 @@ const Expenses = () => {
     setEdit(expense);
   };
 
+  //premium Handler
+  const premiumHandler = () => {
+    dispatch(themeActions.toggleTheme());
+  };
+  //csv files
+  const title = ['Category', 'Amount', 'Description'];
+  const data = [title];
+
+  expenses.forEach((item) => {
+    data.push([item.name, item.amount, item.category]);
+  });
+
+  const creatingCSV = data.map((row) => row.join(',')).join('\n');
+  const blob = new Blob([creatingCSV]);
+
+
   return (
     <>
       <div className="card">
@@ -245,6 +273,7 @@ const Expenses = () => {
         </table>
         {toatalAmont >= 10000 && (
           <button
+            onClick={premiumHandler}
             style={{
               marginTop: "1rem",
               backgroundColor: "red",
@@ -254,8 +283,13 @@ const Expenses = () => {
           >
             SubScribe to Premium
           </button>
+           
         )}
+        <a href={URL.createObjectURL(blob)} download='expenses.csv' style={{marginTop:"80px", color:"red"}}>
+           Download Your Expenses
+         </a>
       </center>
+      
     </>
   );
 };
