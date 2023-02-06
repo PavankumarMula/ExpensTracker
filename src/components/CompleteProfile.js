@@ -67,8 +67,8 @@ const CompleteProfile = (props) => {
       >
         <h2>Winners Never quit,Quitters Never Win.</h2>
         <p>
-          your profile is 64% completed.<br/>A Compete profile has higher chances of
-          landing a job,
+          your profile is 64% completed.
+          <br />A Compete profile has higher chances of landing a job,
           <br /> Complete following details
         </p>
       </div>
@@ -86,7 +86,10 @@ const CompleteProfile = (props) => {
           }}
         >
           <form onSubmit={updateProfileHandler}>
-            <label htmlFor="fullname" style={{ padding: "5px", margin: "5px",fontWeight:'bolder' }}>
+            <label
+              htmlFor="fullname"
+              style={{ padding: "5px", margin: "5px", fontWeight: "bolder" }}
+            >
               Full Name
             </label>
             <br />
@@ -100,7 +103,11 @@ const CompleteProfile = (props) => {
             <br />
             <label
               htmlFor="phot"
-              style={{ padding: "10px", marginTop: "15px",fontWeight:'bolder' }}
+              style={{
+                padding: "10px",
+                marginTop: "15px",
+                fontWeight: "bolder",
+              }}
             >
               Photo Url
             </label>

@@ -4,7 +4,7 @@ import ExpensesSliceReducer from "./ExpensesSlice";
 const store = configureStore({
   reducer: {
     auth: authSliceReducer,
-    expenses:ExpensesSliceReducer
+    expenses: ExpensesSliceReducer,
   },
 });
 

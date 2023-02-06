@@ -6,11 +6,11 @@ const Expenses = () => {
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [expenseName, setExpenseName] = useState("");
   const [expenseCategory, setExpenseCategory] = useState("");
-  // const [expenses, setExpenses] = useState([]);
+  const [toatalAmont, setTotalAmount] = useState(0);
+
   const [edit, setEdit] = useState(null);
   const expenses = useSelector((state) => state.expenses.expenses);
   const dispatch = useDispatch();
-  console.log(expenses);
   useEffect(() => {
     try {
       fetch(`https://react-92f28-default-rtdb.firebaseio.com/Expenses.json`)
@@ -29,6 +29,15 @@ const Expenses = () => {
       alert(error);
     }
   }, [dispatch]);
+
+  //premuim
+  useEffect(() => {
+    let sum = 0;
+    for (let i = 0; i < expenses.length; i++) {
+      sum = sum + parseInt(expenses[i].amount);
+    }
+    setTotalAmount(sum);
+  }, [expenses]);
 
   const expensesFormHandler = async (event) => {
     event.preventDefault();
@@ -63,7 +72,7 @@ const Expenses = () => {
           // );
           dispatch(
             ExpenseSliceActions.editExpensive({
-              id:edit.id,
+              id: edit.id,
               amount: expenseAmount,
               name: expenseName,
               category: expenseCategory,
@@ -142,7 +151,7 @@ const Expenses = () => {
         // setExpenses((prevValues) => {
         //   return prevValues.filter((expense) => expense.id !== expenseId);
         // });
-        dispatch(ExpenseSliceActions.removeExpensive(expenseId))
+        dispatch(ExpenseSliceActions.removeExpensive(expenseId));
       } else {
         const data = await response.json();
         throw data.error;
@@ -158,6 +167,7 @@ const Expenses = () => {
     setExpenseName(expense.name);
     setEdit(expense);
   };
+
   return (
     <>
       <div className="card">
@@ -233,6 +243,18 @@ const Expenses = () => {
             ))}
           </tbody>
         </table>
+        {toatalAmont >= 10000 && (
+          <button
+            style={{
+              marginTop: "1rem",
+              backgroundColor: "red",
+              color: "white",
+              borderRadius: "15px",
+            }}
+          >
+            SubScribe to Premium
+          </button>
+        )}
       </center>
     </>
   );

@@ -4,8 +4,8 @@ import { useDispatch } from "react-redux";
 import { authActions } from "../Store/AuthUser";
 const Home = (props) => {
   const [email, setEmail] = useState("");
-  const dispatch=useDispatch()
-  const history=useHistory()
+  const dispatch = useDispatch();
+  const history = useHistory();
   const verifyEmailHandler = async (e) => {
     const token = localStorage.getItem("token");
     try {
@@ -35,11 +35,10 @@ const Home = (props) => {
     }
   };
 
- const logoutHandler=()=>{
-  dispatch(authActions.logout())
-   history.replace('/login');
- }
-
+  const logoutHandler = () => {
+    dispatch(authActions.logout());
+    history.replace("/login");
+  };
 
   return (
     <>
@@ -59,7 +58,9 @@ const Home = (props) => {
               <Link to="/completeprofile" style={{ color: "red" }}>
                 complete now
               </Link>
-              <Link to="/expenses" style={{ color: "red",marginLeft:"50px" }}>Expenses</Link>
+              <Link to="/expenses" style={{ color: "red", marginLeft: "50px" }}>
+                Expenses
+              </Link>
             </span>
           </h4>
         </div>
