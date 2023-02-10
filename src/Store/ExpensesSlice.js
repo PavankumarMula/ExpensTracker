@@ -28,18 +28,14 @@ const ExpensesSlice = createSlice({
         state.expenses.splice(index, 1);
       }
     },
-    // refreshExpenses(state, action) {
-    //   state.expenses = [...state.expenses, ...action.payload];
-    // },
+   
     refreshExpenses(state, action) {
-      const expenses = [...state.expenses];
-      action.payload.forEach(item => {
-        if (!expenses.some(i => i.id === item.id)) {
-          expenses.push(item);
-        }
-      });
-      state.expenses = expenses;
+     state.expenses=[...state.expenses,...action.payload]
+      
     },
+    logoutbutton(state,action){
+      state.expenses=[]
+    }
   },
 });
 

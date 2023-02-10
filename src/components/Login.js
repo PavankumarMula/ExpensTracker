@@ -36,7 +36,7 @@ const LogIn = () => {
         localStorage.setItem("email", response.email);
         // setToken(response.idToken);
         dispatch(authActions.login());
-        history.replace("/expenses");
+        history.replace("/home");
       } else {
         const response = await loginData.json();
         throw response.error;

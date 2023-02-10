@@ -3,34 +3,40 @@ import "./Expenses.css";
 import { useDispatch, useSelector } from "react-redux";
 import { ExpenseSliceActions } from "../Store/ExpensesSlice";
 import { themeActions } from "../Store/ThemeSlicer";
+
 const Expenses = () => {
+  const dispatch = useDispatch();
   const [expenseAmount, setExpenseAmount] = useState(0);
   const [expenseName, setExpenseName] = useState("");
   const [expenseCategory, setExpenseCategory] = useState("");
   const [toatalAmont, setTotalAmount] = useState(0);
-
   const [edit, setEdit] = useState(null);
   const expenses = useSelector((state) => state.expenses.expenses);
   const themeMode = useSelector((state) => state.theme.theme);
-  const dispatch = useDispatch();
+  const email = useSelector((state) => state.auth.email);
+  const emailUrl = email.replace(/[@.]/g, "");
+ console.log(expenses)
   useEffect(() => {
-    try {
-      fetch(`https://react-92f28-default-rtdb.firebaseio.com/Expenses.json`)
-        .then((response) =>
-          response.json().then((data) => {
-            let myarray = [];
-            for (let key of Object.keys(data)) {
-              myarray.push({ id: key, ...data[key] });
-            }
-
-            dispatch(ExpenseSliceActions.refreshExpenses(myarray));
-          })
-        )
-        .catch((err) => console.log(err));
-    } catch (error) {
-      alert(error);
+    
+    if (emailUrl) {
+      const bringData = async () => {
+        const expensesData = await fetch(
+          `https://react-demo-50fe0-default-rtdb.firebaseio.com/${emailUrl}Expenses.json`
+        );
+        if (expensesData.ok) {
+          const expensesJson = await expensesData.json();
+          let myarray = [];
+          for (let key of Object.keys(expensesJson)) {
+            let obj = expensesJson[key];
+            myarray.push({
+              id:key,...obj});
+          }
+          dispatch(ExpenseSliceActions.refreshExpenses(myarray));
+        }
+      };
+      bringData().catch(alert.error);
     }
-  }, [dispatch]);
+  }, [dispatch,emailUrl]);
 
   //premuim
   useEffect(() => {
@@ -42,21 +48,20 @@ const Expenses = () => {
   }, [expenses]);
   //theme
 
-  useEffect(()=>{
-    if(themeMode==="dark"){
-      document.body.style.backgroundColor="darkred"
-    }else{
-      document.body.style.backgroundColor="darkblue"
+  useEffect(() => {
+    if (themeMode === "dark") {
+      document.body.style.backgroundColor = "darkred";
+    } else {
+      document.body.style.backgroundColor = "darkblue";
     }
-  },[themeMode])//theme ends
-
+  }, [themeMode]); //theme ends
 
   const expensesFormHandler = async (event) => {
     event.preventDefault();
     if (edit) {
       try {
         const editData = await fetch(
-          `https://react-92f28-default-rtdb.firebaseio.com/Expenses/${edit.id}.json`,
+          `https://react-demo-50fe0-default-rtdb.firebaseio.com/${emailUrl}Expenses/${edit.id}.json`,
           {
             method: "PUT",
             body: JSON.stringify({
@@ -70,18 +75,6 @@ const Expenses = () => {
           }
         );
         if (editData.ok) {
-          //  setExpenses((prevExpenses) =>
-          //   prevExpenses.map((item) =>
-          //     item.id === edit.id
-          //       ? {
-          //           ...item,
-          // amount: expenseAmount,
-          // name: expenseName,
-          // category: expenseCategory,
-          //         }
-          //       : item
-          //   )
-          // );
           dispatch(
             ExpenseSliceActions.editExpensive({
               id: edit.id,
@@ -102,7 +95,7 @@ const Expenses = () => {
     else {
       try {
         const expenseResposnse = await fetch(
-          `https://react-92f28-default-rtdb.firebaseio.com/Expenses.json`,
+          `https://react-demo-50fe0-default-rtdb.firebaseio.com/${emailUrl}Expenses.json`,
           {
             method: "POST",
             body: JSON.stringify({
@@ -118,17 +111,8 @@ const Expenses = () => {
         if (expenseResposnse.ok) {
           const response = await expenseResposnse.json();
           if (response.name !== undefined) {
-            // setExpenses((prevValues) => {
-            //   return [
-            //     ...prevValues,
-            //     {
-            //       id: response.name,
-            //       name: expenseName,
-            //       amount: expenseAmount,
-            //       category: expenseCategory,
-            //     },
-            //   ];
-            // });
+  
+           
             dispatch(
               ExpenseSliceActions.addExpensive({
                 id: response.name,
@@ -154,15 +138,13 @@ const Expenses = () => {
   const deleteHandler = async (expenseId) => {
     try {
       const response = await fetch(
-        `https://react-92f28-default-rtdb.firebaseio.com/Expenses/${expenseId}.json`,
+        `https://react-demo-50fe0-default-rtdb.firebaseio.com/${emailUrl}Expenses/${expenseId}.json`,
         {
           method: "DELETE",
         }
       );
       if (response.ok) {
-        // setExpenses((prevValues) => {
-        //   return prevValues.filter((expense) => expense.id !== expenseId);
-        // });
+        
         dispatch(ExpenseSliceActions.removeExpensive(expenseId));
       } else {
         const data = await response.json();
@@ -174,6 +156,7 @@ const Expenses = () => {
   };
   //Edit Hanndler
   const editHandler = async (expense) => {
+    console.log(expense);
     setExpenseAmount(expense.amount);
     setExpenseCategory(expense.category);
     setExpenseName(expense.name);
@@ -185,16 +168,15 @@ const Expenses = () => {
     dispatch(themeActions.toggleTheme());
   };
   //csv files
-  const title = ['Category', 'Amount', 'Description'];
+  const title = ["Category", "Amount", "Description"];
   const data = [title];
 
   expenses.forEach((item) => {
     data.push([item.name, item.amount, item.category]);
   });
 
-  const creatingCSV = data.map((row) => row.join(',')).join('\n');
+  const creatingCSV = data.map((row) => row.join(",")).join("\n");
   const blob = new Blob([creatingCSV]);
-
 
   return (
     <>
@@ -283,13 +265,15 @@ const Expenses = () => {
           >
             SubScribe to Premium
           </button>
-           
         )}
-        <a href={URL.createObjectURL(blob)} download='expenses.csv' style={{marginTop:"80px", color:"red"}}>
-           Download Your Expenses
-         </a>
+        <a
+          href={URL.createObjectURL(blob)}
+          download="expenses.csv"
+          style={{ marginTop: "80px", color: "red" }}
+        >
+          Download Your Expenses
+        </a>
       </center>
-      
     </>
   );
 };
